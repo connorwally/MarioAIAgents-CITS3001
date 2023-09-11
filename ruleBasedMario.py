@@ -4,7 +4,6 @@ from gym_super_mario_bros.actions import COMPLEX_MOVEMENT
 import gym
 import numpy as np
 
-
 # Define the moves for easier understanding later on
 moves = [
     "NOTHING",
@@ -62,7 +61,7 @@ def goomba(observation, row, col, theme):
         return True
 
 
-def agent(observation, info):
+def agent(observation, info, ticks):
     # Get relevant values from info
     xPos = info["x_pos"]
     yPos = info["y_pos"]
@@ -76,15 +75,19 @@ def agent(observation, info):
 	for i in range(1, 50000):
 		print(i)
 	"""
+
+    for i in range(1, 250):
+        print()
+
     # print(hudPixels)
     # Determine input to make
-    if yPos > 10:
-        return actions["RIGHT"]
-    else:
+    if ticks % 100 > 50 and ticks % 100 < 100:
         return actions["RIGHT_JUMP"]
+    return actions["RIGHT"]
 
 
 def main():
+    ticks = 34
     env = gym.make(
         "SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human"
     )
@@ -95,8 +98,9 @@ def main():
     env.reset()
     action = 4
     while not done:
+        ticks += 1
         obs, reward, terminated, truncated, info = env.step(action)
-        action = agent(obs, info)
+        action = agent(obs, info, ticks)
         rewardTotal += reward
         """
 		for x in obs:
