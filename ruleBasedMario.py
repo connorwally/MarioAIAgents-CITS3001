@@ -10,16 +10,20 @@ def look(observation, theme ='g'):
 	objects = {}
 	for row in range(253):
 		for p in range(253): #doesn't go all the way to the end since it can't identify things cut off by the screen border
-			if observation[row][p] == [228, 92, 16]:
-				if goomba(observation, row, p, theme):
-					objects[(row, p)] = 'goomba'
-
-	return
-
+			if theme == 'g':
+				if observation[row][p] == [228, 92, 16]:
+					if goomba(observation, row, p, theme):
+						objects[(row, p)] = 'enemy'
+					elif bricks(observation, row, p, theme):
+						objects[(row, p)] = 'blocks'
 
 def goomba(observation, row, col, theme):
 	if theme == 'g' and observation[row+1][col] == [228, 92, 16] and observation[row+2][col] == [228, 92, 16] and observation[row+3][col] == [228, 92, 16] and observation[row][col+1] == [240, 208, 176] and observation[row+1][col+1] == [240, 208, 176] and observation[row+2][col+1] == [240, 208, 176] and observation[row+3][col+1] == [240, 208, 176] and observation[row][col+2] == [0,0,0] and observation[row+1][col+2] == [0,0,0] and observation[row+2][col+2] == [0,0,0] and observation[row+3][col+2] == [240, 208, 176] and observation[row][col+3] == [228, 92, 16] and observation[row+1][col+3] == [0,0,0] and observation[row+2][col+3] == [240, 208, 176] and observation[row+3][col+3] == [240, 208, 176]:
 			return True
+	
+def bricks(observation, row, col, theme):
+	if theme == 'g' and observation[row+1][col] == [228, 92, 16] and observation[row+2][col] == [228, 92, 16] and observation[row+3][col] == [0,0,0] and observation[row][col+1] == [228, 92, 16] and observation[row+1][col+1] == [228, 92, 16] and observation[row+2][col+1] == [228, 92, 16] and observation[row+3][col+1] == [0,0,0] and observation[row][col+2] == [228, 92, 16] and observation[row+1][col+2] == [228, 92, 16] and observation[row+2][col+2] == [228, 92, 16] and observation[row+3][col+2] == [0,0,0] and observation[row][col+3] == [0,0,0] and observation[row+1][col+3] == [0,0,0] and observation[row+2][col+3] == [0,0,0] and observation[row+3][col+3] == [0,0,0]:
+		return True
 
 def agent(observation, info):
 	#Get relevant values from info
