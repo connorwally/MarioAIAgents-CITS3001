@@ -15,7 +15,7 @@ import string
 
 # change these values if you want more/less printing
 PRINT_GRID      = False
-PRINT_LOCATIONS = False
+PRINT_LOCATIONS = True
 
 COMPLEX_MOVEMENT = [
     ['NOOP'],
@@ -368,39 +368,52 @@ def make_action(screen, info, step, env, prev_action):
     # For example, action = 0 means do nothing
     #              action = 1 means press 'right' button
     #              action = 2 means press 'right' and 'A' buttons at the same time
-    print(enemy_locations)
-    for e in enemy_locations:
-        if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
-            for i in range(500000):
-                print("Found an enemy, jumping!")
-            return 4
-        if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
-            for i in range(500000):
-                print("Found an enemy behind you, jumping!")
-            return 9
     hole = True
+    grounded = False
     for b in block_locations:
-        #print(b)
         if b[0][0] - mario_x in range(0, 20) and b[0][1] - mario_y in range(-20, 20):
             hole = False
-    if hole:
-        for i in range(500000):
-            print("Found a pit, jumping!")
-        return 4
+        if b[0][0] - mario_x in range(-8, 8) and b[0][1] - mario_y in range(14, 18):
+            grounded = True
+    if grounded:
+        print('grounded')
+        if hole:
+            for i in range(250000):
+                print("Found a pit, jumping!")
+                print(mario_x, mario_y)
+            return 4
+    
+    print(enemy_locations)
+    if grounded:
+        for e in enemy_locations:
+            if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
+                for i in range(250000):
+                    print("Found an enemy, jumping!")
+                    print(mario_x, mario_y)
+                return 4
+            if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
+                for i in range(250000):
+                    print("Found an enemy behind you, jumping!")
+                    print(mario_x, mario_y)
+                return 9
+   
     
     if step % 10 == 0 or prev_action == 4 or prev_action == 9:
         # I have no strategy at the moment, so I'll choose a random action.
         action = env.action_space.sample()
         if action > 5:
             action = action - 6
+
         return action
     else:
         # With a random agent, I found that choosing the same random action
         # 10 times in a row leads to slightly better performance than choosing
         # a new random action every step.
+
         return prev_action
 
 ################################################################################
+#When grounded at usual floor height, Mario's y pos is 193
 
 env = gym.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
 env = JoypadSpace(env, COMPLEX_MOVEMENT)
