@@ -370,14 +370,18 @@ def make_action(screen, info, step, env, prev_action):
     #              action = 2 means press 'right' and 'A' buttons at the same time
     hole = True
     grounded = False
+    #check block locations to see if Mario is on the ground and if the platform he's on is ending
+    #note that for now these assume Mario is small; change this later to account for super/fire Mario
     for b in block_locations:
         if b[0][0] - mario_x in range(0, 20) and b[0][1] - mario_y in range(-20, 20):
             hole = False
         if b[0][0] - mario_x in range(-8, 8) and b[0][1] - mario_y in range(14, 18):
             grounded = True
+    #see if there's something to jump over, assuming you're grounded and can jump
     if grounded:
         print('grounded')
         if hole:
+            #mass printing freezes the screen for debugging purposes
             for i in range(250000):
                 print("Found a pit, jumping!")
                 print(mario_x, mario_y)
@@ -387,11 +391,13 @@ def make_action(screen, info, step, env, prev_action):
     if grounded:
         for e in enemy_locations:
             if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
+                #mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an enemy, jumping!")
                     print(mario_x, mario_y)
                 return 4
             if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
+                #mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an enemy behind you, jumping!")
                     print(mario_x, mario_y)
@@ -413,7 +419,7 @@ def make_action(screen, info, step, env, prev_action):
         return prev_action
 
 ################################################################################
-#When grounded at usual floor height, Mario's y pos is 193
+#When grounded at usual floor height, Mario's y pos as measured by this code is 193
 
 env = gym.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
 env = JoypadSpace(env, COMPLEX_MOVEMENT)
@@ -422,8 +428,11 @@ obs = None
 done = True
 env.reset()
 jumpCount = 0
+maxDist = 0
+blockedCount = 0
 for step in range(100000):
     if jumpCount > 0:
+        #keep holding jump to ensure a large jump is made
         jumpCount -= 1
         print("JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!" + str(jumpCount))
         #action = 4
@@ -432,6 +441,7 @@ for step in range(100000):
         else:
             action = 3
     elif jumpCount < 0:
+        #same as above for leftward jumps
         jumpCount += 1
         print("JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?" + str(jumpCount))
         #action = 9
@@ -441,6 +451,7 @@ for step in range(100000):
             action = 8
     elif obs is not None:
         action = make_action(obs, info, step, env, action)
+        #if you begin to jump, set the jumpCount variables accordingly
         if action == 4 and jumpCount == 0:
             jumpCount = 40
         elif action == 9 and jumpCount == 0:
@@ -449,6 +460,13 @@ for step in range(100000):
         action = env.action_space.sample()
     print("Action performed: " + str(COMPLEX_MOVEMENT[action]))
     obs, reward, terminated, truncated, info = env.step(action)
+    #see if Mario is still successfully moving right
+    if info["x_pos"] > maxDist:
+        maxDist = info['x_pos']
+        blockedCount = 0
+    else:
+        blockedCount += 1
+
     done = terminated or truncated
     if done:
         break
