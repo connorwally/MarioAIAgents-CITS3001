@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "mario"
+name = "cits3001-project"
 version = "0.1.0"
-description = "The CITS3001 project with the Super Mario Bros simulation."
-authors = ["reilly-23615971 <23615971@student.uwa.edu.au>"]
+description = ""
+authors = ["Wally17 <wally.connor17@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 gym-super-mario-bros = "^7.4.0"
+opencv-python = "^4.8.0.76"
 
 
 [build-system]

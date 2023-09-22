@@ -9,13 +9,13 @@ moves = [
     "NOTHING",
     "RIGHT",
     "RIGHT_JUMP",
-    "RIGHT_ATTACK",
-    "RIGHT_JUMP_ATTACK",
+    "RIGHT_RUN",
+    "RIGHT_JUMP_RUN",
     "JUMP",
     "LEFT",
     "LEFT_JUMP",
-    "LEFT_ATTACK",
-    "LEFT_JUMP_ATTACK",
+    "LEFT_RUN",
+    "LEFT_JUMP_RUN",
     "DOWN",
     "UP",
 ]
@@ -82,8 +82,8 @@ def agent(observation, info, ticks):
     # print(hudPixels)
     # Determine input to make
     if ticks % 100 > 50 and ticks % 100 < 100:
-        return actions["RIGHT_JUMP"]
-    return actions["RIGHT"]
+        return actions["RIGHT_JUMP_RUN"]
+    return actions["RIGHT_RUN"]
 
 
 def main():
