@@ -429,6 +429,7 @@ done = True
 env.reset()
 jumpCount = 0
 maxDist = 0
+lives = 3
 blockedCount = 0
 for step in range(100000):
     if jumpCount > 0:
@@ -449,25 +450,36 @@ for step in range(100000):
             action = 9
         else:
             action = 8
+    elif blockedCount > 35:
+        for i in range(100000):
+            print("Blocked; jumping at full height...")
+        action == 4
+        jumpCount = 35
+        blockedCount = 0
     elif obs is not None:
         action = make_action(obs, info, step, env, action)
         #if you begin to jump, set the jumpCount variables accordingly
         if action == 4 and jumpCount == 0:
-            jumpCount = 40
+            jumpCount = 35
         elif action == 9 and jumpCount == 0:
-            jumpCount = -40
+            jumpCount = -35
     else:
         action = env.action_space.sample()
     print("Action performed: " + str(COMPLEX_MOVEMENT[action]))
+    print(maxDist, blockedCount)
     obs, reward, terminated, truncated, info = env.step(action)
     #see if Mario is still successfully moving right
     if info["x_pos"] > maxDist:
         maxDist = info['x_pos']
         blockedCount = 0
+    elif info["life"] < lives:
+        maxDist = 0
+        lives = info['life']
     else:
         blockedCount += 1
 
     done = terminated or truncated
     if done:
+        maxDist = 0
         break
 env.close()
