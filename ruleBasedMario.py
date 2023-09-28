@@ -83,7 +83,7 @@ def agent(observation, info, ticks):
     # Determine input to make
     if ticks % 100 > 50 and ticks % 100 < 100:
         return actions["RIGHT_JUMP"]
-    return actions["RIGHT"]
+    return actions["NOTHING"]
 
 
 def main():
