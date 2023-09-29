@@ -19,25 +19,6 @@ VERSIONS OF THE LIBRARIES USED.
 ################################################################################
 # CREATE THE ENVIRONMENT
 
-# Define the moves for easier understanding later on
-moves = [
-    "NOTHING",
-    "RIGHT",
-    "RIGHT_JUMP",
-    "RIGHT_RUN",
-    "RIGHT_JUMP_RUN",
-    "JUMP",
-    "LEFT",
-    "LEFT_JUMP",
-    "LEFT_RUN",
-    "LEFT_JUMP_RUN",
-    "DOWN",
-    "UP",
-]
-
-actions = dict(zip(moves, range(12)))
-
-
 # Create the environment
 env = gym_super_mario_bros.make(
     "SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human"
@@ -49,7 +30,6 @@ env = gym_super_mario_bros.make(
 # Simplify controls for the AI
 JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
 env = JoypadSpace(env, SIMPLE_MOVEMENT)
-
 
 # Gray scale the environment
 env = GrayScaleObservation(env, keep_dim=True)
