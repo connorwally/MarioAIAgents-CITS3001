@@ -5,7 +5,17 @@ from gym.wrappers import GrayScaleObservation
 from stable_baselines3.common.vec_env import VecFrameStack, DummyVecEnv
 from matplotlib import pyplot as plt
 
+################################################################################
+"""
 
+PLEASE NOTE IN ITS CURRENT STATE, THIS IS A COPY FROM THE FOLLOWING VIDEO:
+https://youtu.be/2eeYqJ0uBKE?si=QAD43UqAAK7tBdD9
+
+MINOR CHANGES HAVE BEEN MADE TO THE CODE TO MAKE IT WORK WITH THE CURRENT
+VERSIONS OF THE LIBRARIES USED.
+
+
+"""
 ################################################################################
 # CREATE THE ENVIRONMENT
 
