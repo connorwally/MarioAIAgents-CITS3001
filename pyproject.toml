@@ -10,9 +10,9 @@ python = "^3.10"
 gym-super-mario-bros = "^7.4.0"
 opencv-python = "^4.8.0.76"
 nes-py = "^8.2.1"
+torch = {version = "^2.0.1+cpu", source = "pytorch"}
+torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
 stable-baselines3 = {extras = ["extra"], version = "^2.1.0"}
-torch = {version = "^2.1.0+cpu", source = "pytorch"}
-torchvision = {version = "^0.16.0+cpu", source = "pytorch"}
 
 
 [[tool.poetry.source]]
