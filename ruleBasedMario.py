@@ -68,9 +68,13 @@ image_files = {
     "enemy": {
         "goomba": ["goomba.png"],
         "koopa": ["koopaA.png", "koopaB.png"],
+        "paratroopa": ["paratroopaA.png", "paratroopaB.png"]
+    },
+    "hard_enemy": {
+        "piranha plant": ["plantA.png", "plantB.png"]
     },
     "block": {
-        "block": ["block1.png", "block2.png", "block3.png", "block4.png"],
+        "block": ["block1.png", "block2.png", "block3.png", "block4.png", "semisolid_left.png", "semisolid_middle.png", "semisolid_right.png", "bridge.png", "cloud_platform.png"],
         "question_block": ["questionA.png", "questionB.png", "questionC.png"],
         "pipe": ["pipe_upper_section.png", "pipe_lower_section.png"],
     },
@@ -78,6 +82,7 @@ image_files = {
         # Note: The template matcher is colourblind (it's using greyscale),
         # so it can't tell the difference between red and green mushrooms.
         "mushroom": ["mushroom_red.png"],
+        "spring": ["spring.png"]
         # There are also other items in the game that I haven't included,
         # such as star.
 
@@ -117,7 +122,7 @@ def get_template_and_flipped(filenames):
 
 # Mario and enemies can face both right and left, so I'll also include
 # horizontally flipped versions of those templates.
-include_flipped = {"mario", "enemy"}
+include_flipped = {"mario", "enemy", "hard_enemy"}
 
 # generate all templatees
 templates = {}
@@ -300,6 +305,9 @@ def make_action(screen, info, step, env, prev_action):
     # List of locations of enemies, such as goombas and koopas:
     enemy_locations = object_locations["enemy"]
 
+    # List of locations of enemies that can't be jumped on, such as piranha plants:
+    hard_enemy_locations = object_locations["hard_enemy"]
+
     # List of locations of blocks, pipes, etc:
     block_locations = object_locations["block"]
 
@@ -325,6 +333,12 @@ def make_action(screen, info, step, env, prev_action):
             x, y = enemy_location
             width, height = enemy_dimensions
             print("enemy:", x, y, width, height, enemy_name)
+
+        for enemy in hard_enemy_locations:
+            enemy_location, enemy_dimensions, enemy_name = enemy
+            x, y = enemy_location
+            width, height = enemy_dimensions
+            print("hard enemy:", x, y, width, height, enemy_name)
 
         # Or you could do it this way:
         for block in block_locations:
