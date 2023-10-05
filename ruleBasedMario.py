@@ -46,7 +46,10 @@ MATCH_THRESHOLD = 0.9
 # TEMPLATES FOR LOCATING OBJECTS
 
 # ignore sky blue colour when matching templates
-MASK_COLOUR = np.array([252, 136, 104])
+MASK_COLOUR = np.array([252, 136, 104]) #ground
+#MASK_COLOUR = np.array([0, 0, 0]) #underground/castle
+#MASK_COLOUR = np.array([0, 88, 248]) #underwater
+
 # (these numbers are [BLUE, GREEN, RED] because opencv uses BGR colour format by default)
 
 # You can add more images to improve the object locator, so that it can locate
