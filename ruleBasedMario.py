@@ -416,6 +416,20 @@ def make_action(screen, info, step, env, prev_action):
                     print("Found an enemy behind you, jumping!")
                     print(mario_x, mario_y)
                 return 9
+        
+        for e in hard_enemy_locations:
+            if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
+                #mass printing freezes the screen for debugging purposes
+                for i in range(250000):
+                    print("Found an unstompable enemy, jumping!")
+                    print(mario_x, mario_y)
+                return 4
+            if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
+                #mass printing freezes the screen for debugging purposes
+                for i in range(250000):
+                    print("Found an unstompable enemy behind you, jumping!")
+                    print(mario_x, mario_y)
+                return 9
    
     
     #if step % 10 == 0 or prev_action == 4 or prev_action == 9:
