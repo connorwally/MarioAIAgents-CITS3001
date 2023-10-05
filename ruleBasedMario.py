@@ -77,7 +77,7 @@ image_files = {
         "piranha plant": ["plantA.png", "plantB.png"]
     },
     "block": {
-        "block": ["block1.png", "block2.png", "block3.png", "block4.png", "semisolid_left.png", "semisolid_middle.png", "semisolid_right.png", "bridge.png", "cloud_platform.png"],
+        "block": ["block1.png", "block2.png", "block3.png", "block4.png", "semisolid_left.png", "semisolid_middle.png", "semisolid_right.png", "bridge.png", "platform.png", "cloud.png", "cloud_platform.png"],
         "question_block": ["questionA.png", "questionB.png", "questionC.png"],
         "pipe": ["pipe_upper_section.png", "pipe_lower_section.png"],
     },
