@@ -82,7 +82,8 @@ image_files = {
         # Note: The template matcher is colourblind (it's using greyscale),
         # so it can't tell the difference between red and green mushrooms.
         "mushroom": ["mushroom_red.png"],
-        "spring": ["spring.png"]
+        "spring": ["spring.png"],
+        "vine": ["vine.png", "vine_top.png"]
         # There are also other items in the game that I haven't included,
         # such as star.
 
