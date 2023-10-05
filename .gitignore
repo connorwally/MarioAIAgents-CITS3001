@@ -1,3 +1,4 @@
-.vscode
-poetry.lock
-pyproject.toml
+.DS_Store
+~$eliminary Project Notes.docx
+~$port Draft.docx
+.vscode/
