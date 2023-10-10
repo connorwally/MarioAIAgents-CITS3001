@@ -15,7 +15,7 @@ import string
 
 # change these values if you want more/less printing
 PRINT_GRID      = False
-PRINT_LOCATIONS = True
+PRINT_LOCATIONS = False
 
 COMPLEX_MOVEMENT = [
     ['NOOP'],
@@ -399,40 +399,45 @@ def make_action(screen, info, step, env, prev_action):
     if grounded:
         print('grounded')
         if hole:
-            #mass printing freezes the screen for debugging purposes
+            '''mass printing freezes the screen for debugging purposes
             for i in range(250000):
                 print("Found a pit, jumping!")
                 print(mario_x, mario_y)
+            '''
             return 4
     
-    print(enemy_locations)
+    #print(enemy_locations)
     if grounded:
         for e in enemy_locations:
             if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
-                #mass printing freezes the screen for debugging purposes
+                '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an enemy, jumping!")
-                    print(mario_x, mario_y)
+                    print("Mario coordinates:", mario_x, mario_y)
+                '''
                 return 4
             if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
-                #mass printing freezes the screen for debugging purposes
+                '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an enemy behind you, jumping!")
-                    print(mario_x, mario_y)
+                    print("Mario coordinates:", mario_x, mario_y)
+                '''
                 return 9
         
         for e in hard_enemy_locations:
             if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
-                #mass printing freezes the screen for debugging purposes
+                '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an unstompable enemy, jumping!")
-                    print(mario_x, mario_y)
+                    print("Mario coordinates:", mario_x, mario_y)
+                '''
                 return 4
             if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
-                #mass printing freezes the screen for debugging purposes
+                '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an unstompable enemy behind you, jumping!")
-                    print(mario_x, mario_y)
+                    print("Mario coordinates:", mario_x, mario_y)
+                '''
                 return 9
    
     
@@ -454,6 +459,7 @@ def make_action(screen, info, step, env, prev_action):
 #When grounded at usual floor height, Mario's y pos as measured by this code is 193
 
 env = gym.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
+#env = gym.make("SuperMarioBros-1-3-v0", apply_api_compatibility=True, render_mode="human")
 env = JoypadSpace(env, COMPLEX_MOVEMENT)
 
 obs = None
@@ -462,14 +468,16 @@ env.reset()
 jumpCount = 0
 maxDist = 0
 lives = 3
+stage = (1,1)
 blockedCount = 0
 triedSmall = False
+rewardSum = 0
 for step in range(100000):
     if jumpCount > 0:
         #keep holding jump to ensure a large jump is made
         jumpCount -= 1
         print("JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!" + str(jumpCount))
-        #action = 4
+        #the last few frames of the jump release the jump button to ensure successive jumps work and the button isn't held forever
         if jumpCount > 10:
             action = 4
         else:
@@ -478,21 +486,27 @@ for step in range(100000):
         #same as above for leftward jumps
         jumpCount += 1
         print("JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?" + str(jumpCount))
-        #action = 9
         if jumpCount < -10:
             action = 9
         else:
             action = 8
+    #if Mario hasn't moved right in a while, try jumping to clear blocks/pipes
     elif blockedCount > 15 and not triedSmall:
+        #start with a small jump to ascend staircases
+        '''
         for i in range(100000):
             print("Blocked; jumping at short height...")
+        '''
         action == 4
         jumpCount = 15
         blockedCount = 0
         triedSmall = True
     elif blockedCount > 35:
+        #do a full sized jump if the small one didn't work
+        '''
         for i in range(100000):
             print("Blocked; jumping at full height...")
+        '''
         action == 4
         jumpCount = 35
         blockedCount = 0
@@ -505,18 +519,24 @@ for step in range(100000):
             jumpCount = -35
     else:
         action = 3
-    print(action)
+    #'''Debug print statements to display notable information to the terminal
+    #print(action)
     print("Action performed: " + str(COMPLEX_MOVEMENT[action]))
     print(maxDist, blockedCount)
+    #'''
     obs, reward, terminated, truncated, info = env.step(action)
-    #see if Mario is still successfully moving right
+    print('Reward: ' + str(reward))
+    rewardSum += reward
+    #check if Mario is still successfully moving right and start counting if he isn't
     if info["x_pos"] > maxDist:
         maxDist = info['x_pos']
         blockedCount = 0
         triedSmall = False
-    elif info["life"] < lives:
+    elif info["life"] < lives or (info["world"], info["stage"]) != stage:
+        #reset max distance on death or stage clear
         maxDist = 0
         lives = info['life']
+        stage = (info["world"], info["stage"])
     else:
         blockedCount += 1
 
@@ -524,4 +544,5 @@ for step in range(100000):
     if done:
         maxDist = 0
         break
+print("Total reward gained: " + str(rewardSum))
 env.close()
