@@ -17,6 +17,7 @@ import string
 PRINT_GRID      = False
 PRINT_LOCATIONS = False
 
+#action id to buttons pressed; used for printing the action performed to the terminal
 COMPLEX_MOVEMENT = [
     ['NOOP'],
     ['right'],
@@ -330,6 +331,9 @@ def make_action(screen, info, step, env, prev_action):
     if mario_locations:
         location, dimensions, object_name = mario_locations[0]
         mario_x, mario_y = location
+        #avoid breaking by adjusting Mario's coordinates if he's big, since the locating code measures from the top-right corner
+        if info["status"] != 'small':
+            mario_y -= 16
     if PRINT_LOCATIONS:
         # To get the information out of a list:
         for enemy in enemy_locations:
@@ -368,6 +372,9 @@ def make_action(screen, info, step, env, prev_action):
         if mario_locations:
             location, dimensions, object_name = mario_locations[0]
             mario_x, mario_y = location
+            #avoid breaking by adjusting Mario's coordinates if he's big, since the locating code measures from the top-right corner
+            if info["status"] != 'small':
+                mario_y -= 16
             print("Mario's location on screen:",
                   mario_x, mario_y, f"({object_name} mario)")
         
@@ -380,16 +387,10 @@ def make_action(screen, info, step, env, prev_action):
         print("Mario's location in world:",
               mario_world_x, mario_world_y, f"({mario_status} mario)")
 
-    # TODO: Write code for a strategy, such as a rule based agent.
-
-    # Choose an action from the list of available actions.
-    # For example, action = 0 means do nothing
-    #              action = 1 means press 'right' button
-    #              action = 2 means press 'right' and 'A' buttons at the same time
+    #choose an action based on collected information
     hole = True
     grounded = False
     #check block locations to see if Mario is on the ground and if the platform he's on is ending
-    #note that for now these assume Mario is small; change this later to account for super/fire Mario
     for b in block_locations:
         if b[0][0] - mario_x in range(0, 20) and b[0][1] - mario_y in range(-20, 20):
             hole = False
@@ -397,19 +398,19 @@ def make_action(screen, info, step, env, prev_action):
             grounded = True
     #see if there's something to jump over, assuming you're grounded and can jump
     if grounded:
-        print('grounded')
+        #print('grounded')
         if hole:
+            #jump when you're at the edge of a platform
             '''mass printing freezes the screen for debugging purposes
             for i in range(250000):
                 print("Found a pit, jumping!")
                 print(mario_x, mario_y)
             '''
             return 4
-    
-    #print(enemy_locations)
-    if grounded:
+        #print(enemy_locations)
         for e in enemy_locations:
             if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
+                #jump over nearby enemies
                 '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an enemy, jumping!")
@@ -417,15 +418,17 @@ def make_action(screen, info, step, env, prev_action):
                 '''
                 return 4
             if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
+                #jump over enemies coming from behind
                 '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an enemy behind you, jumping!")
                     print("Mario coordinates:", mario_x, mario_y)
                 '''
                 return 9
-        
+        #print(hard_enemy_locations)
         for e in hard_enemy_locations:
             if e[0][0] - mario_x in range(1, 70) and e[0][1] - mario_y in range(-20, 20):
+                #jump over nearby enemies
                 '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an unstompable enemy, jumping!")
@@ -433,51 +436,39 @@ def make_action(screen, info, step, env, prev_action):
                 '''
                 return 4
             if e[0][0] - mario_x in range(-1, -70) and e[0][1] - mario_y in range(-20, 20):
+                #jump over enemies coming from behind
                 '''mass printing freezes the screen for debugging purposes
                 for i in range(250000):
                     print("Found an unstompable enemy behind you, jumping!")
                     print("Mario coordinates:", mario_x, mario_y)
                 '''
                 return 9
+        #space for more jumping responses
    
-    
-    #if step % 10 == 0 or prev_action == 4 or prev_action == 9:
-        # I have no strategy at the moment, so I'll choose a random action.
-       # action = env.action_space.sample()
-       # if action > 5:
-       #     action = action - 6
-
-       # return action
-    else:
-        # With a random agent, I found that choosing the same random action
-        # 10 times in a row leads to slightly better performance than choosing
-        # a new random action every step.
-        return 3
-        #return prev_action
+    #space for more non-jumping responses
+    #by default run right
     return 3
 ################################################################################
 #When grounded at usual floor height, Mario's y pos as measured by this code is 193
 
+#run from 1-1 with 3 lives
 env = gym.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
+#run from level of choice with 1 life
 #env = gym.make("SuperMarioBros-1-3-v0", apply_api_compatibility=True, render_mode="human")
 env = JoypadSpace(env, COMPLEX_MOVEMENT)
 
-obs = None
-done = True
+obs, done = None, True
 env.reset()
-jumpCount = 0
-maxDist = 0
+jumpCount, maxDist, blockedCount, triedSmall = 0, 0, 0, False
 lives = 3
 stage = (1,1)
-blockedCount = 0
-triedSmall = False
 rewardSum = 0
 for step in range(100000):
     if jumpCount > 0:
-        #keep holding jump to ensure a large jump is made
+        #when jumping, keep holding jump to ensure a large jump is made
         jumpCount -= 1
-        print("JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!" + str(jumpCount))
-        #the last few frames of the jump release the jump button to ensure successive jumps work and the button isn't held forever
+        #print("JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!JUMP!" + str(jumpCount))
+        #the last few frames of the jump release the jump button to ensure the button isn't kept held down, which would prevent consecutive jumps
         if jumpCount > 10:
             action = 4
         else:
@@ -485,7 +476,7 @@ for step in range(100000):
     elif jumpCount < 0:
         #same as above for leftward jumps
         jumpCount += 1
-        print("JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?" + str(jumpCount))
+        #print("JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?JUMP?" + str(jumpCount))
         if jumpCount < -10:
             action = 9
         else:
@@ -517,23 +508,24 @@ for step in range(100000):
             jumpCount = 35
         elif action == 9 and jumpCount == 0:
             jumpCount = -35
+    #run right as the first action + if the observation ever fails to be obtained
     else:
         action = 3
-    #'''Debug print statements to display notable information to the terminal
-    #print(action)
+    obs, reward, terminated, truncated, info = env.step(action)
+    '''Debug print statements to display notable information to the terminal
+    print(action)
     print("Action performed: " + str(COMPLEX_MOVEMENT[action]))
     print(maxDist, blockedCount)
-    #'''
-    obs, reward, terminated, truncated, info = env.step(action)
     print('Reward: ' + str(reward))
+    '''
     rewardSum += reward
     #check if Mario is still successfully moving right and start counting if he isn't
     if info["x_pos"] > maxDist:
         maxDist = info['x_pos']
         blockedCount = 0
         triedSmall = False
+    #reset max distance on death or stage clear
     elif info["life"] < lives or (info["world"], info["stage"]) != stage:
-        #reset max distance on death or stage clear
         maxDist = 0
         lives = info['life']
         stage = (info["world"], info["stage"])
