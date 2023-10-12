@@ -7,11 +7,13 @@ from stable_baselines3 import PPO
 
 #################################################################################
 # CONSTANTS
-MODEL_PATH = "./models/best_model_2000.zip"  # Path to the saved model
+MODEL_PATH = "./models/model0.000001-good-progress.zip"  # Path to the saved model
 
 #################################################################################
 # PREPROCESS AND SETUP
-env = gym_super_mario_bros.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
+env = gym_super_mario_bros.make(
+    "SuperMarioBros-v3", apply_api_compatibility=True, render_mode="human"
+)
 JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
 env = JoypadSpace(env, SIMPLE_MOVEMENT)
 env = GrayScaleObservation(env, keep_dim=True)
@@ -22,9 +24,10 @@ env = VecFrameStack(env, 4, channels_order="last")
 model = PPO.load(MODEL_PATH)
 
 # Run the model
-obs = env.reset()
-done = False
-while not done:
-    action, _states = model.predict(obs)
-    obs, reward, done, info = env.step(action)
+for i in range(10):
+    obs = env.reset()
+    done = False
+    while not done:
+        action, _states = model.predict(obs)
+        obs, reward, done, info = env.step(action)
 env.close()
