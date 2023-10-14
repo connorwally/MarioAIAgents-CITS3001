@@ -462,7 +462,7 @@ env.reset()
 jumpCount, maxDist, blockedCount, triedSmall = 0, 0, 0, False
 lives = 3
 stage = (1,1)
-rewardSum = 0
+rewardSum, steps = 0,0
 for step in range(100000):
     if jumpCount > 0:
         #when jumping, keep holding jump to ensure a large jump is made
@@ -519,6 +519,7 @@ for step in range(100000):
     print('Reward: ' + str(reward))
     '''
     rewardSum += reward
+    steps += 1
     #check if Mario is still successfully moving right and start counting if he isn't
     if info["x_pos"] > maxDist:
         maxDist = info['x_pos']
@@ -536,5 +537,5 @@ for step in range(100000):
     if done:
         maxDist = 0
         break
-print("Total reward gained: " + str(rewardSum))
+print("Total reward gained: " + str(rewardSum) + ", total steps: " + str(steps))
 env.close()
