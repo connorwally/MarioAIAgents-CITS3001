@@ -1,5 +1,5 @@
 from nes_py.wrappers import JoypadSpace
-from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
+from gym_super_mario_bros.actions import COMPLEX_MOVEMENT
 import gym
 import cv2 as cv
 import numpy as np
@@ -349,22 +349,6 @@ def make_action(screen, info, step, env, prev_action):
     return 3
 ################################################################################
 #end of Lauren's code
-
-#action id to buttons pressed; used for printing the action performed to the terminal
-COMPLEX_MOVEMENT = [
-    ['NOOP'],
-    ['right'],
-    ['right', 'A'],
-    ['right', 'B'],
-    ['right', 'A', 'B'],
-    ['A'],
-    ['left'],
-    ['left', 'A'],
-    ['left', 'B'],
-    ['left', 'A', 'B'],
-    ['down'],
-    ['up'],
-]
 
 #run from 1-1 with 3 lives
 env = gym.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
