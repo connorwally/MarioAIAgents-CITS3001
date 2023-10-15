@@ -8,30 +8,15 @@ import string
 # code for locating objects on the screen in super mario bros
 # by Lauren Gee
 
+#edits made to this code will be marked with additional comments
+
 # Template matching is based on this tutorial:
 # https://docs.opencv.org/4.x/d4/dc6/tutorial_py_template_matching.html
 
 ################################################################################
 
 # change these values if you want more/less printing
-PRINT_GRID      = False
 PRINT_LOCATIONS = False
-
-#action id to buttons pressed; used for printing the action performed to the terminal
-COMPLEX_MOVEMENT = [
-    ['NOOP'],
-    ['right'],
-    ['right', 'A'],
-    ['right', 'B'],
-    ['right', 'A', 'B'],
-    ['A'],
-    ['left'],
-    ['left', 'A'],
-    ['left', 'B'],
-    ['left', 'A', 'B'],
-    ['down'],
-    ['up'],
-]
 
 # If printing the grid doesn't display in an understandable way, change the
 # settings of your terminal (or anaconda prompt) to have a smaller font size,
@@ -48,8 +33,6 @@ MATCH_THRESHOLD = 0.9
 
 # ignore sky blue colour when matching templates
 MASK_COLOUR = np.array([252, 136, 104]) #ground
-#MASK_COLOUR = np.array([0, 0, 0]) #underground/castle
-#MASK_COLOUR = np.array([0, 88, 248]) #underwater
 
 # (these numbers are [BLUE, GREEN, RED] because opencv uses BGR colour format by default)
 
@@ -61,13 +44,12 @@ MASK_COLOUR = np.array([252, 136, 104]) #ground
 # it should work fine.
 
 # filenames for object templates
+#addition: many more enemies, such as paratroopas, and blocks, such as bridges
 image_files = {
     "mario": {
         "small": ["marioA.png", "marioB.png", "marioC.png", "marioD.png",
                   "marioE.png", "marioF.png", "marioG.png"],
         "tall": ["tall_marioA.png", "tall_marioB.png", "tall_marioC.png"],
-        # Note: Many images are missing from tall mario, and I don't have any
-        # images for fireball mario.
     },
     "enemy": {
         "goomba": ["goomba.png"],
@@ -142,62 +124,7 @@ for category in image_files:
             category_templates[object_name] = get_template(filenames)
     templates[category] = category_templates
 
-################################################################################
-# PRINTING THE GRID (for debug purposes)
-
-colour_map = {
-    (104, 136, 252): " ", # sky blue colour
-    (0,     0,   0): " ", # black
-    (252, 252, 252): "'", # white / cloud colour
-    (248,  56,   0): "M", # red / mario colour
-    (228,  92,  16): "%", # brown enemy / block colour
-}
-unused_letters = sorted(set(string.ascii_uppercase) - set(colour_map.values()),reverse=True)
-DEFAULT_LETTER = "?"
-
-def _get_colour(colour): # colour must be 3 ints
-    colour = tuple(colour)
-    if colour in colour_map:
-        return colour_map[colour]
-    
-    # if we haven't seen this colour before, pick a letter to represent it
-    if unused_letters:
-        letter = unused_letters.pop()
-        colour_map[colour] = letter
-        return letter
-    else:
-        return DEFAULT_LETTER
-
-def print_grid(obs, object_locations):
-    pixels = {}
-    # build the outlines of located objects
-    for category in object_locations:
-        for location, dimensions, object_name in object_locations[category]:
-            x, y = location
-            width, height = dimensions
-            name_str = object_name.replace("_", "-") + "-"
-            for i in range(width):
-                pixels[(x+i, y)] = name_str[i%len(name_str)]
-                pixels[(x+i, y+height-1)] = name_str[(i+height-1)%len(name_str)]
-            for i in range(1, height-1):
-                pixels[(x, y+i)] = name_str[i%len(name_str)]
-                pixels[(x+width-1, y+i)] = name_str[(i+width-1)%len(name_str)]
-
-    # print the screen to terminal
-    print("-"*SCREEN_WIDTH)
-    for y in range(SCREEN_HEIGHT):
-        line = []
-        for x in range(SCREEN_WIDTH):
-            coords = (x, y)
-            if coords in pixels:
-                # this pixel is part of an outline of an object,
-                # so use that instead of the normal colour symbol
-                colour = pixels[coords]
-            else:
-                # get the colour symbol for this colour
-                colour = _get_colour(obs[y][x])
-            line.append(colour)
-        print("".join(line))
+#the grid printing functions originally in Lauren's code were not used in our project (even in debugging), so they have been removed
 
 ################################################################################
 # LOCATING OBJECTS
@@ -284,23 +211,6 @@ def make_action(screen, info, step, env, prev_action):
     mario_status = info["status"]
     object_locations = locate_objects(screen, mario_status)
 
-    # You probably don't want to print everything I am printing when you run
-    # your code, because printing slows things down, and it puts a LOT of
-    # information in your terminal.
-
-    # Printing the whole grid is slow, so I am only printing it occasionally,
-    # and I'm only printing it for debug purposes, to see if I'm locating objects
-    # correctly.
-    if PRINT_GRID and step % 100 == 0:
-        print_grid(screen, object_locations)
-        # If printing the grid doesn't display in an understandable way, change
-        # the settings of your terminal (or anaconda prompt) to have a smaller
-        # font size, so that everything fits on the screen. Also, use a large
-        # terminal window / whole screen.
-
-        # object_locations contains the locations of all the objects we found
-        #print(object_locations)
-
     # List of locations of Mario:
     mario_locations = object_locations["mario"]
     # (There's usually 1 item in mario_locations, but there could be 0 if we
@@ -326,12 +236,14 @@ def make_action(screen, info, step, env, prev_action):
     #
     # For example, the enemy_locations list might look like this:
     # [((161, 193), (16, 16), 'goomba'), ((175, 193), (16, 16), 'goomba')]
+    #addition: defaults for mario's location based on where he's most likely located on the screen, for if the agent can't find him for whatever reason
     mario_x = 120
     mario_y = 79
+    #edit: check mario's location and set the variables no matter what, since they're used in the decision making code
     if mario_locations:
         location, dimensions, object_name = mario_locations[0]
         mario_x, mario_y = location
-        #avoid breaking by adjusting Mario's coordinates if he's big, since the locating code measures from the top-right corner
+        #addition: avoid breaking by adjusting Mario's coordinates if he's big, since the locating code measures from the top-right corner
         if info["status"] != 'small':
             mario_y -= 16
     if PRINT_LOCATIONS:
@@ -365,19 +277,6 @@ def make_action(screen, info, step, env, prev_action):
         print(info)
         # see https://pypi.org/project/gym-super-mario-bros/ for explanations
 
-        # The x and y coordinates in object_locations are screen coordinates.
-        # Top left corner of screen is (0, 0), top right corner is (255, 0).
-        # Here's how you can get Mario's screen coordinates:
-        
-        if mario_locations:
-            location, dimensions, object_name = mario_locations[0]
-            mario_x, mario_y = location
-            #avoid breaking by adjusting Mario's coordinates if he's big, since the locating code measures from the top-right corner
-            if info["status"] != 'small':
-                mario_y -= 16
-            print("Mario's location on screen:",
-                  mario_x, mario_y, f"({object_name} mario)")
-        
         # The x and y coordinates in info are world coordinates.
         # They tell you where Mario is in the game, not his screen position.
         mario_world_x = info["x_pos"]
@@ -386,7 +285,7 @@ def make_action(screen, info, step, env, prev_action):
         mario_status = info["status"]
         print("Mario's location in world:",
               mario_world_x, mario_world_y, f"({mario_status} mario)")
-
+    #addition: all decision making code below
     #choose an action based on collected information
     hole = True
     grounded = False
@@ -449,7 +348,23 @@ def make_action(screen, info, step, env, prev_action):
     #by default run right
     return 3
 ################################################################################
-#When grounded at usual floor height, Mario's y pos as measured by this code is 193
+#end of Lauren's code
+
+#action id to buttons pressed; used for printing the action performed to the terminal
+COMPLEX_MOVEMENT = [
+    ['NOOP'],
+    ['right'],
+    ['right', 'A'],
+    ['right', 'B'],
+    ['right', 'A', 'B'],
+    ['A'],
+    ['left'],
+    ['left', 'A'],
+    ['left', 'B'],
+    ['left', 'A', 'B'],
+    ['down'],
+    ['up'],
+]
 
 #run from 1-1 with 3 lives
 env = gym.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
