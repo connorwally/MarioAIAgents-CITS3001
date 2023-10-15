@@ -7,7 +7,7 @@ from stable_baselines3 import PPO
 
 #################################################################################
 # CONSTANTS
-MODEL_PATH = "./models/model0.000001-good-progress.zip"  # Path to the saved model
+MODEL_PATH = "./models/modelBAD0.00001-finish.zip"  # Path to the saved model
 
 #################################################################################
 # PREPROCESS AND SETUP
