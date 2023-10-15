@@ -530,6 +530,7 @@ for step in range(100000):
         maxDist = 0
         lives = info['life']
         stage = (info["world"], info["stage"])
+        print("Current reward gained: " + str(rewardSum) + ", current steps: " + str(steps) + ", current score: " + str(info["score"]))
     else:
         blockedCount += 1
 
@@ -537,5 +538,5 @@ for step in range(100000):
     if done:
         maxDist = 0
         break
-print("Total reward gained: " + str(rewardSum) + ", total steps: " + str(steps))
+print("Total reward gained: " + str(rewardSum) + ", total steps: " + str(steps) + ", total score: " + str(info["score"]))
 env.close()
