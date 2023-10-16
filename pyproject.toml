@@ -6,14 +6,16 @@ authors = ["reilly-23615971 <23615971@student.uwa.edu.au>", "connor-22506057 <22
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "<3.12, >=3.9"
 gym-super-mario-bros = "^7.4.0"
 opencv-python = "^4.8.0.76"
 nes-py = "^8.2.1"
-torch = {version = "^2.0.1+cpu", source = "pytorch"}
-torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
-stable-baselines3 = {extras = ["extra"], version = "^2.1.0"}
-
+numpy = "^1.26.1"
+torch = {version = "^2.1.0+cpu", source = "pytorch"}
+torchvision = {version = "^0.16.0+cpu", source = "pytorch"}
+stable-baselines3 = "^2.1.0"
+shimmy = "^1.2.1"
+tensorboard = "^2.14.1"
 
 [[tool.poetry.source]]
 name = "pytorch"
