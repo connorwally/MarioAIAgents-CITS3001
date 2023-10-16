@@ -13,12 +13,12 @@ When installing and running the project, you may encounter multiple errors so pl
 
 1. Ensure the following:
    a. A Python version <3.12 is installed. (Our project was run on 3.11.5)
-   b. Poetry is installed
-   c. Visual Studio BuildTools is installed
-   d. Untested on macOS (we believe it may not work)
-   e. Poetry is added to your system path correctly
-2. Change directory into the project file using “cd [file path]”
-3. Install the required dependencies through poetry using “poetry install”
+   b. Poetry is installed (see https://python-poetry.org/docs/master/)
+   c. Poetry is added to your system path correctly (see above link)
+   d. Visual Studio BuildTools is installed
+   e. For the PPO agent, you are using Windows (does not work in MacOS)
+2. Change directory into the project file using the terminal command “cd [file path]”
+3. Install the required dependencies through poetry using the command “poetry install”
 4. Running:
    a. Rule-based Agent: “poetry run python ruleBasedMario.py”
    b. Train the PPO Agent: “poetry run python 1_TrainMario.py”
