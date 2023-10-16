@@ -29,6 +29,6 @@ for i in range(10):
     obs = env.reset()
     done = False
     while not done:
-        action, _states = model.predict(obs, deterministic=False)
+        action, _states = model.predict(obs, deterministic=True)
         obs, reward, done, info = env.step(action)
 env.close()
