@@ -20,10 +20,10 @@ When installing and running the project, you may encounter multiple errors so pl
 2. Change directory into the project file using the terminal command “cd [file path]”
 3. Install the required dependencies through poetry using the command “poetry install”
 4. Running:
-   a. Rule-based Agent: “poetry run python ruleBasedMario.py”
-   b. Train the PPO Agent: “poetry run python 1_TrainMario.py”
-   c. Run the PPO Agent: “poetry run python 2_RunMario.py”
-   d. Run the PPO Deterministic Agent: "poetry run python 3_RunMarioDeterministic.py"
+   * Rule-based Agent: “poetry run python ruleBasedMario.py”
+   * Train the PPO Agent: “poetry run python 1_TrainMario.py”
+   * Run the PPO Agent: “poetry run python 2_RunMario.py”
+   * Run the PPO Deterministic Agent: "poetry run python 3_RunMarioDeterministic.py"
 
 NOTE:
 - The default agent model is our best model to date. Using a learning rate of 0.00001 and running on super-mario-bros-gym-v3.
@@ -32,6 +32,6 @@ NOTE:
 # PPO Models
 For the project we developed over 50 different model configurations and hundreds of models (although most were short lived). Included is only 3, to keep the file space small.
 Change the variable called MODEL_PATH in 2_RunMario.py or 3_RunMarioDeterministic.py to one of the below:
-1. "./models/model_best_v3_highlearningrate.zip" - Trained on a learning rate of 0.00001 and the v3 of mario.
-2. "./models/model_medium_v1_lowlearningrate.zip" - Trained on a learning rate of 0.000001 and the v0 of mario.
-3. "./models/model_bad_v1_highlearningrate.zip" - Trained on a learning rate of 0.00001 and the v0 of mario.
+* "./models/model_best_v3_highlearningrate.zip" - Trained on a learning rate of 0.00001 and the v3 of mario.
+* "./models/model_medium_v1_lowlearningrate.zip" - Trained on a learning rate of 0.000001 and the v0 of mario.
+* "./models/model_bad_v1_highlearningrate.zip" - Trained on a learning rate of 0.00001 and the v0 of mario.
